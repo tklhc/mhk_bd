@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F1923">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bordro">
+<meta name="description" content="MİHENK Bordro Hesaplayıcı 2026">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" href="./favicon.ico">
+<title>MİHENK Bordro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F7;
+  --surface:#FFFFFF;
+  --hdr:#0F1923;
+  --navy:#1C2B3A;
+  --acc:#E8782A;
+  --acc2:#C5611A;
+  --txt:#1a1a2e;
+  --txt2:#5a6478;
+  --txt3:#8a96a8;
+  --border:#E2E6EC;
+  --success-bg:#EAF7EE;
+  --success:#1a7a3a;
+  --warn-bg:#FFF4E5;
+  --warn:#9a5a00;
+  --info-bg:#E8F2FF;
+  --info:#1a4a8a;
+  --radius:14px;
+  --radius-sm:9px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);
+  --font:'Barlow',system-ui,sans-serif;
+  --font-cond:'Barlow Condensed',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:var(--font);color:var(--txt);overscroll-behavior:none}
+
+/* ── TOPBAR ─────────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--hdr);
+  padding:env(safe-area-inset-top,0) 0 0;
+}
+.topbar-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-hex{width:36px;height:36px;flex-shrink:0}
+.logo-text{display:flex;flex-direction:column;line-height:1.1}
+.logo-text .brand{font-family:var(--font-cond);font-size:18px;font-weight:700;color:#fff;letter-spacing:.5px}
+.logo-text .sub{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1.2px;text-transform:uppercase;font-weight:500}
+.year-badge{background:var(--acc);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;font-family:var(--font-cond);letter-spacing:.5px}
+
+/* ── SCROLL AREA ─────────────────────────── */
+.scroll-area{
+  padding:16px 14px calc(env(safe-area-inset-bottom,0px) + 24px);
+  max-width:520px;margin:0 auto;
+}
+
+/* ── CARDS ───────────────────────────────── */
+.card{
+  background:var(--surface);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;
+}
+.card-head{
+  padding:13px 16px 0;display:flex;align-items:center;gap:8px;
+}
+.card-head .icon{
+  width:28px;height:28px;border-radius:7px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;
+}
+.card-head .icon svg{width:15px;height:15px}
+.card-head .label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--txt2)}
+.card-body{padding:10px 16px 14px}
+
+/* ── FORM ELEMENTS ───────────────────────── */
+.field{margin-bottom:10px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:4px}
+.field input,.field select{
+  width:100%;padding:10px 12px;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  font-family:var(--font);font-size:14px;color:var(--txt);
+  background:#fff;outline:none;transition:border-color .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.field input:focus,.field select:focus{border-color:var(--acc)}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a96a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* ── NET INPUT ───────────────────────────── */
+.net-wrap{position:relative}
+.net-wrap input{
+  font-size:28px;font-weight:700;padding:14px 52px 14px 14px;
+  border:2px solid var(--border);border-radius:var(--radius-sm);
+  letter-spacing:-.5px;
+}
+.net-wrap input:focus{border-color:var(--acc)}
+.net-wrap .currency{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:14px;font-weight:600;color:var(--txt3);
+}
+
+/* ── MESAI ───────────────────────────────── */
+.mesai-header{display:grid;grid-template-columns:2fr 80px 72px 80px;gap:6px;padding:0 16px 6px;align-items:end}
+.mesai-header span{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.5px;text-transform:uppercase}
+.mesai-row{display:grid;grid-template-columns:2fr 80px 72px 80px;gap:6px;padding:0 16px 8px;align-items:center}
+.mesai-row input,.mesai-row select{padding:8px 8px;font-size:13px;border-radius:var(--radius-sm)}
+.mesai-row .readonly-input{background:var(--bg);color:var(--txt2);border-color:var(--border)}
+.add-btn{
+  margin:4px 16px 14px;padding:9px;border:1.5px dashed var(--border);
+  border-radius:var(--radius-sm);background:none;cursor:pointer;
+  font-size:13px;color:var(--txt2);font-family:var(--font);width:calc(100% - 32px);
+  transition:background .15s;
+}
+.add-btn:hover{background:var(--bg)}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--txt3);font-size:18px;line-height:1;padding:2px 4px}
+.del-btn:hover{color:#c0392b}
+.mesai-note{padding:0 16px 12px;font-size:11px;color:var(--txt3)}
+
+/* ── WARN ────────────────────────────────── */
+.warn{
+  background:var(--warn-bg);border-radius:var(--radius-sm);
+  padding:9px 12px;font-size:12px;color:var(--warn);
+  margin:4px 0 0;display:none;border-left:3px solid var(--acc);
+}
+.warn.show{display:block}
+
+/* ── RESULT ──────────────────────────────── */
+.result-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+
+.brut-strip{
+  background:var(--navy);padding:14px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.brut-strip .lbl{font-size:12px;color:rgba(255,255,255,.6);font-weight:500}
+.brut-strip .val{font-size:22px;font-weight:700;color:#fff;font-family:var(--font-cond);letter-spacing:-.3px}
+.brut-strip .sub-detail{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+
+.section-divider{padding:10px 16px 4px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--txt3)}
+
+.kes-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 16px;font-size:13px;
+}
+.kes-row:not(:last-child){border-bottom:1px solid var(--bg)}
+.kes-row .name{color:var(--txt);flex:1}
+.kes-row .amt{font-weight:600;color:var(--txt);white-space:nowrap;margin-left:8px}
+.kes-row.sub .name{color:var(--txt2);font-size:12px;padding-left:14px}
+.kes-row.sub .amt{color:var(--txt2);font-size:12px;font-weight:500}
+.kes-row.istisna .name{color:var(--success);font-size:12px;padding-left:14px}
+.kes-row.istisna .amt{color:var(--success);font-size:12px}
+.kes-row.total{background:var(--bg);font-weight:700}
+.kes-row.total .name{font-weight:700}
+
+.net-strip{
+  background:var(--acc);padding:16px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.net-strip .lbl{font-size:12px;color:rgba(255,255,255,.75);font-weight:600;letter-spacing:.3px}
+.net-strip .val{font-size:26px;font-weight:700;color:#fff;font-family:var(--font-cond);letter-spacing:-.3px}
+
+/* ── PILLS ───────────────────────────────── */
+.pills{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
+.pill{
+  font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;
+  background:var(--bg);color:var(--txt2);border:1px solid var(--border);
+}
+.pill.orange{background:rgba(232,120,42,.1);color:var(--acc2);border-color:rgba(232,120,42,.25)}
+.pill.blue{background:var(--info-bg);color:var(--info);border-color:rgba(26,74,138,.2)}
+
+/* ── IZIN BANNER ─────────────────────────── */
+.izin-banner{
+  background:var(--info-bg);margin:0 16px 8px;padding:9px 12px;
+  border-radius:var(--radius-sm);border-left:3px solid var(--info);
+  font-size:12px;color:var(--info);
+}
+
+/* ── PRINT BTN ───────────────────────────── */
+.print-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:calc(100% - 32px);margin:0 16px 16px;padding:13px;
+  background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);
+  font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;
+  letter-spacing:.2px;transition:background .15s;
+}
+.print-btn:hover{background:#263d52}
+.print-btn svg{width:16px;height:16px;flex-shrink:0}
+
+/* ── SPLASH SHIMMER ──────────────────────── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card,.result-card{animation:fadeIn .25s ease both}
+
+@media(max-width:360px){
+  .mesai-row,.mesai-header{grid-template-columns:1.5fr 70px 64px 70px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">
+      <!-- Hexagon logo -->
+      <svg class="logo-hex" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="#E8782A"/>
+        <polygon points="18,8 28,14 28,22 18,28 8,22 8,14" fill="#0F1923"/>
+        <!-- M letter -->
+        <polyline points="11,23 11,14 18,20 25,14 25,23" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <!-- tool accent line -->
+        <line x1="13" y1="26.5" x2="23" y2="26.5" stroke="#E8782A" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div class="logo-text">
+        <span class="brand">MİHENK</span>
+        <span class="sub">Kesici Takımlar</span>
+      </div>
+    </div>
+    <span class="year-badge">2026</span>
+  </div>
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll-area">
+
+  <!-- Personel -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon" style="background:#EEF2FF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4F6EF7" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <span class="label">Personel Bilgileri</span>
+    </div>
+    <div class="card-body">
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="field"><label>Ad soyad</label><input id="pAd" type="text" autocomplete="name" oninput="hesapla()"></div>
+        <div class="field"><label>TC kimlik no</label><input id="pTc" type="tel" maxlength="11" oninput="hesapla()"></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><label>Görev</label><input id="pGorev" type="text" oninput="hesapla()"></div>
+        <div class="field"><label>Dönem</label>
+          <select id="pAy" onchange="hesapla()">
+            <option value="1">Ocak 2026</option><option value="2">Şubat 2026</option>
+            <option value="3">Mart 2026</option><option value="4">Nisan 2026</option>
+            <option value="5">Mayıs 2026</option><option value="6">Haziran 2026</option>
+            <option value="7">Temmuz 2026</option><option value="8">Ağustos 2026</option>
+            <option value="9">Eylül 2026</option><option value="10">Ekim 2026</option>
+            <option value="11">Kasım 2026</option><option value="12">Aralık 2026</option>
+          </select>
+        </div>
+        <div class="field"><label>Çalışılan gün</label><input id="pGun" type="number" value="30" min="1" max="31" oninput="hesapla()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Net Maaş -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon" style="background:#FFF0E6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#E8782A" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2.5-3 1.1-3 2.5 1.3 2.5 3 2.5 3-1.1 3-2.5"/>
+        </svg>
+      </div>
+      <span class="label">Net Maaş (Baz)</span>
+    </div>
+    <div class="card-body">
+      <div class="net-wrap field">
+        <input id="netInput" type="number" inputmode="numeric" oninput="hesapla()">
+        <span class="currency">TL</span>
+      </div>
+      <div class="warn" id="warnBox">Girilen tutar asgari ücretin (28.075,50 TL) altında.</div>
+    </div>
+  </div>
+
+  <!-- Fazla Mesai -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon" style="background:#FFF8E6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+        </svg>
+      </div>
+      <span class="label">Fazla Mesai</span>
+    </div>
+
+    <div class="mesai-header">
+      <span>Gün tipi</span><span>Saat</span><span>Çarpan</span><span>Tutar</span>
+    </div>
+
+    <div id="mesaiRows">
+      <div class="mesai-row">
+        <select class="m-tip" onchange="hesapla()">
+          <option value="normal">Normal iş günü</option>
+          <option value="tatil">Resmi tatil</option>
+        </select>
+        <input class="m-saat" type="number" inputmode="numeric" min="0" max="300" oninput="hesapla()">
+        <input class="m-carpan" type="number" inputmode="decimal" step="0.25" min="1" max="5" value="1.5" oninput="hesapla()">
+        <input class="m-sonuc readonly-input" readonly>
+      </div>
+      <div class="mesai-row">
+        <select class="m-tip" onchange="tipDegisti(this);hesapla()">
+          <option value="normal">Normal iş günü</option>
+          <option value="tatil" selected>Resmi tatil</option>
+        </select>
+        <input class="m-saat" type="number" inputmode="numeric" min="0" max="300" oninput="hesapla()">
+        <input class="m-carpan" type="number" inputmode="decimal" step="0.25" min="1" max="5" value="2" oninput="hesapla()">
+        <input class="m-sonuc readonly-input" readonly>
+      </div>
+    </div>
+
+    <button class="add-btn" onclick="satirEkle()">+ Satır ekle</button>
+    <div class="mesai-note">Saatlik brüt = aylık brüt ÷ 240 (30 gün × 8 saat)</div>
+  </div>
+
+  <!-- Yıllık İzin -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon" style="background:#E8F5E9">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+          <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+        </svg>
+      </div>
+      <span class="label">Yıllık İzin</span>
+    </div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="field"><label>Kullanılan izin günü</label><input id="izinGun" type="number" inputmode="numeric" min="0" max="60" oninput="hesapla()"></div>
+        <div class="field"><label>Tarih (opsiyonel)</label><input id="izinTarih" type="text" oninput="hesapla()"></div>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:6px">Yıllık izin ücretlidir — maaş tam ödenir, bordröda ayrıca belgelenir.</div>
+    </div>
+  </div>
+
+  <!-- SONUÇ -->
+  <div id="resultBlock" style="display:none">
+
+    <div class="result-card">
+      <div class="brut-strip">
+        <div>
+          <div class="lbl">Toplam Brüt Ücret</div>
+          <div id="brutSubDetail" class="sub-detail"></div>
+        </div>
+        <div class="val" id="brutVal">—</div>
+      </div>
+
+      <div id="izinBannerWrap"></div>
+
+      <div class="section-divider">Kazançlar</div>
+      <div id="kazRows"></div>
+
+      <div class="section-divider">Kesintiler</div>
+      <div id="kesRows"></div>
+
+      <div class="kes-row total">
+        <span class="name">Toplam kesinti</span>
+        <span class="amt" id="topKesVal">—</span>
+      </div>
+
+      <div class="net-strip">
+        <div class="lbl">NET ÖDENECEK</div>
+        <div class="val" id="netVal">—</div>
+      </div>
+
+      <div class="pills" id="pillsRow"></div>
+
+      <button class="print-btn" onclick="yazdir()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8" rx="1"/>
+        </svg>
+        Yazdır / PDF Olarak Kaydet
+      </button>
+    </div>
+
+  </div>
+
+</div><!-- /scroll-area -->
+
+<script>
+const P={asgBrut:33030,asgNet:28075.50,sgk:0.14,iss:0.01,dv:0.00759,d1:190000/12,d2:400000/12,d3:950000/12};
+function hesapGv(m){if(m<=0)return 0;let g=Math.min(m,P.d1)*0.15;if(m>P.d1)g+=Math.min(m-P.d1,P.d2-P.d1)*0.20;if(m>P.d2)g+=Math.min(m-P.d2,P.d3-P.d2)*0.27;if(m>P.d3)g+=(m-P.d3)*0.35;return g;}
+const GV_IST=hesapGv(P.asgBrut*0.85);
+const DV_IST=P.asgBrut*P.dv;
+function calcNet(b){return b-b*P.sgk-b*P.iss-Math.max(0,hesapGv(b*0.85)-GV_IST)-Math.max(0,b*P.dv-DV_IST);}
+function brutBul(t){if(t<=0)return 0;let lo=t,hi=t*2.5,mid;for(let i=0;i<80;i++){mid=(lo+hi)/2;calcNet(mid)<t?lo=mid:hi=mid;}return mid;}
+const fmt=v=>v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' TL';
+const fmtN=v=>v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function tipDegisti(sel){sel.closest('.mesai-row').querySelector('.m-carpan').value=sel.value==='tatil'?'2':'1.5';}
+
+function satirEkle(){
+  const d=document.createElement('div');d.className='mesai-row';
+  d.innerHTML=`<select class="m-tip" onchange="tipDegisti(this);hesapla()"><option value="normal">Normal iş günü</option><option value="tatil">Resmi tatil</option></select><input class="m-saat" type="number" inputmode="numeric" min="0" oninput="hesapla()"><input class="m-carpan" type="number" inputmode="decimal" step="0.25" min="1" value="1.5" oninput="hesapla()"><div style="display:flex;gap:4px"><input class="m-sonuc readonly-input" readonly><button class="del-btn" onclick="this.closest('.mesai-row').remove();hesapla()">×</button></div>`;
+  document.getElementById('mesaiRows').appendChild(d);
+}
+
+function hesapla(){
+  const rawNet=parseFloat(document.getElementById('netInput').value);
+  if(!rawNet||rawNet<=0){document.getElementById('resultBlock').style.display='none';return;}
+  document.getElementById('warnBox').className=rawNet<P.asgNet?'warn show':'warn';
+  const bazBrut=brutBul(rawNet),saatlik=bazBrut/240;
+  let topMesai=0,mesaiDet=[];
+  document.querySelectorAll('.mesai-row').forEach(r=>{
+    const tip=r.querySelector('.m-tip').value,saat=parseFloat(r.querySelector('.m-saat').value)||0,carp=parseFloat(r.querySelector('.m-carpan').value)||0;
+    const u=saat*saatlik*carp;r.querySelector('.m-sonuc').value=saat>0?fmtN(u):'';
+    if(saat>0&&carp>0){topMesai+=u;mesaiDet.push({tip,saat,carp,u});}
+  });
+  const izinGun=parseInt(document.getElementById('izinGun').value)||0;
+  const izinTarih=document.getElementById('izinTarih').value.trim();
+  const topBrut=bazBrut+topMesai;
+  const sgk=topBrut*P.sgk,iss=topBrut*P.iss,mat=topBrut*0.85;
+  const hgv=hesapGv(mat),ngv=Math.max(0,hgv-GV_IST),ndv=Math.max(0,topBrut*P.dv-DV_IST);
+  const topKes=sgk+iss+ngv+ndv,netF=topBrut-topKes;
+
+  document.getElementById('resultBlock').style.display='block';
+  document.getElementById('brutVal').textContent=fmt(topBrut);
+  document.getElementById('brutSubDetail').textContent=topMesai>0?`Baz ${fmt(bazBrut)} + Mesai ${fmt(topMesai)}`:'';
+
+  // İzin banner
+  document.getElementById('izinBannerWrap').innerHTML=izinGun>0
+    ?`<div class="izin-banner">Yıllık izin: <strong>${izinGun} gün</strong> kullanıldı${izinTarih?' · '+izinTarih:''}. Maaş tam ödenir.</div>`:'';
+
+  // Kazanç rows
+  let kaz=`<div class="kes-row"><span class="name">Baz brüt maaş</span><span class="amt">${fmt(bazBrut)}</span></div>`;
+  mesaiDet.forEach(m=>{kaz+=`<div class="kes-row"><span class="name">${m.tip==='tatil'?'Resmi tatil mesaisi':'Normal gün mesaisi'} (${m.saat} sa. ×${m.carp})</span><span class="amt">${fmt(m.u)}</span></div>`;});
+  if(izinGun>0)kaz+=`<div class="kes-row sub"><span class="name">Yıllık izin${izinTarih?' · '+izinTarih:''} (${izinGun} gün, ücretli)</span><span class="amt" style="color:var(--txt3)">—</span></div>`;
+  kaz+=`<div class="kes-row total"><span class="name">Toplam kazanç (brüt)</span><span class="amt">${fmt(topBrut)}</span></div>`;
+  document.getElementById('kazRows').innerHTML=kaz;
+
+  // Kesinti rows
+  document.getElementById('kesRows').innerHTML=`
+    <div class="kes-row"><span class="name">SGK primi – işçi payı (%14)</span><span class="amt">${fmt(sgk)}</span></div>
+    <div class="kes-row"><span class="name">İşsizlik sigortası – işçi (%1)</span><span class="amt">${fmt(iss)}</span></div>
+    <div class="kes-row"><span class="name">Gelir vergisi</span><span class="amt"></span></div>
+    <div class="kes-row sub"><span class="name">GV matrahı</span><span class="amt">${fmt(mat)}</span></div>
+    <div class="kes-row sub"><span class="name">Hesaplanan gelir vergisi</span><span class="amt">${fmt(hgv)}</span></div>
+    <div class="kes-row istisna"><span class="name">− GV istisnası (asgari ücret)</span><span class="amt">−${fmt(GV_IST)}</span></div>
+    <div class="kes-row sub" style="font-weight:600"><span class="name" style="color:var(--txt);padding-left:14px;font-weight:600">Ödenecek gelir vergisi</span><span class="amt" style="color:var(--txt)">${fmt(ngv)}</span></div>
+    <div class="kes-row"><span class="name">Damga vergisi (net)</span><span class="amt">${fmt(ndv)}</span></div>`;
+
+  document.getElementById('topKesVal').textContent=fmt(topKes);
+  document.getElementById('netVal').textContent=fmt(netF);
+
+  const gvDilim=mat<=P.d1?'%15':mat<=P.d2?'%15–20':mat<=P.d3?'%15–20–27':'%15–20–27–35';
+  const efektif=(topKes/topBrut*100).toFixed(1).replace('.',',');
+  document.getElementById('pillsRow').innerHTML=`
+    <span class="pill">Saatlik ${fmtN(saatlik)} TL</span>
+    <span class="pill">GV ${gvDilim}</span>
+    <span class="pill">Kesinti %${efektif}</span>
+    <span class="pill">İşveren ~${Math.round(topBrut*1.2275).toLocaleString('tr-TR')} TL</span>
+    ${mesaiDet.length>0?`<span class="pill orange">Mesai ${fmt(topMesai)}</span>`:''}
+    ${izinGun>0?`<span class="pill blue">İzin ${izinGun} gün</span>`:''}`;
+}
+
+function yazdir(){
+  const rawNet=parseFloat(document.getElementById('netInput').value)||0;if(!rawNet)return;
+  const ad=document.getElementById('pAd').value||'—',tc=document.getElementById('pTc').value||'—',gorev=document.getElementById('pGorev').value||'—';
+  const ayEl=document.getElementById('pAy'),ay=ayEl.options[ayEl.selectedIndex].text,gun=document.getElementById('pGun').value||'30';
+  const izinGun=parseInt(document.getElementById('izinGun').value)||0,izinTarih=document.getElementById('izinTarih').value.trim();
+  const bazBrut=brutBul(rawNet),saatlik=bazBrut/240;
+  let topMesai=0,mesaiSat='';
+  document.querySelectorAll('.mesai-row').forEach(r=>{
+    const tip=r.querySelector('.m-tip').value,saat=parseFloat(r.querySelector('.m-saat').value)||0,carp=parseFloat(r.querySelector('.m-carpan').value)||0;
+    if(saat>0){const u=saat*saatlik*carp;topMesai+=u;mesaiSat+=`<tr><td>${tip==='tatil'?'Resmi tatil mesaisi':'Normal gün mesaisi'} (${saat} saat × ×${carp})</td><td style="text-align:right">${fmt(u)}</td></tr>`;}
+  });
+  const topBrut=bazBrut+topMesai,sgk=topBrut*P.sgk,iss=topBrut*P.iss,mat=topBrut*0.85;
+  const hgv=hesapGv(mat),ngv=Math.max(0,hgv-GV_IST),ndv=Math.max(0,topBrut*P.dv-DV_IST),topKes=sgk+iss+ngv+ndv,netF=topBrut-topKes;
+
+  const html=`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><title>Bordro – ${ay}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Arial',sans-serif;font-size:12px;color:#111;padding:24px;max-width:680px;margin:0 auto}
+.logo-bar{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.logo-bar svg{width:38px;height:38px}
+.co-name{font-size:15px;font-weight:700;color:#1C2B3A}
+.co-sub{font-size:10px;color:#8a96a8;letter-spacing:.8px;text-transform:uppercase}
+h1{font-size:20px;font-weight:700;color:#1C2B3A;margin:12px 0 14px;padding-bottom:10px;border-bottom:2px solid #E8782A}
+.info{width:100%;border-collapse:collapse;margin-bottom:14px;background:#F4F5F7;border-radius:8px;overflow:hidden}
+.info td{padding:7px 10px}.info .l{font-size:10px;color:#8a96a8;text-transform:uppercase;letter-spacing:.5px}
+table.t{width:100%;border-collapse:collapse;margin-bottom:10px}
+table.t th{background:#1C2B3A;color:#fff;padding:6px 10px;font-size:11px;text-align:left}
+table.t th:last-child{text-align:right}
+table.t td{padding:6px 10px;border-bottom:1px solid #F0F1F3}
+table.t td:last-child{text-align:right;font-weight:600}
+.sub td{font-size:11px;color:#5a6478;padding-left:20px}.ist td{font-size:11px;color:#1a7a3a;padding-left:20px}
+.bf td{font-weight:700;padding-left:20px}.tot td{font-weight:700;background:#F4F5F7}
+.net td{background:#E8782A;color:#fff;font-size:15px;font-weight:700;padding:10px}
+.izin-box{background:#E8F2FF;border-left:3px solid #1a4a8a;padding:7px 10px;border-radius:4px;font-size:11px;color:#1a4a8a;margin-bottom:10px}
+.note{font-size:9px;color:#8a96a8;margin-top:10px;padding-top:8px;border-top:1px solid #E2E6EC}
+.sig{display:flex;gap:40px;margin-top:40px}
+.sig>div{flex:1;text-align:center;border-top:1.5px solid #1C2B3A;padding-top:6px;font-size:10px;color:#5a6478}
+@media print{body{padding:0}}
+</style></head><body>
+<div class="logo-bar">
+<svg viewBox="0 0 36 36"><polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="#E8782A"/><polygon points="18,8 28,14 28,22 18,28 8,22 8,14" fill="#0F1923"/><polyline points="11,23 11,14 18,20 25,14 25,23" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="13" y1="26.5" x2="23" y2="26.5" stroke="#E8782A" stroke-width="1.8" stroke-linecap="round"/></svg>
+<div><div class="co-name">MİHENK Kesici Takımlar San. Tic. Ltd. Şti.</div><div class="co-sub">Maaş Bordrosu</div></div>
+</div>
+<h1>${ay.toUpperCase()}</h1>
+<table class="info"><tr><td><div class="l">Ad Soyad</div><strong>${ad}</strong></td><td><div class="l">TC Kimlik</div><strong>${tc}</strong></td><td><div class="l">Görev</div><strong>${gorev}</strong></td><td><div class="l">Çalışılan Gün</div><strong>${gun}</strong></td></tr></table>
+${izinGun>0?`<div class="izin-box">Yıllık İzin: Bu dönemde <strong>${izinGun} gün</strong> kullanılmıştır${izinTarih?' ('+izinTarih+')':''}. Yıllık izin ücretlidir.</div>`:''}
+<table class="t"><thead><tr><th>Kazançlar</th><th>Tutar</th></tr></thead><tbody>
+<tr><td>Baz brüt maaş</td><td>${fmt(bazBrut)}</td></tr>${mesaiSat}
+<tr class="tot"><td>Toplam kazanç (brüt)</td><td>${fmt(topBrut)}</td></tr></tbody></table>
+<table class="t"><thead><tr><th>Kesintiler</th><th>Tutar</th></tr></thead><tbody>
+<tr><td>SGK primi – işçi payı (%14)</td><td>${fmt(sgk)}</td></tr>
+<tr><td>İşsizlik sigortası – işçi payı (%1)</td><td>${fmt(iss)}</td></tr>
+<tr><td>Gelir vergisi</td><td></td></tr>
+<tr class="sub"><td>GV matrahı</td><td>${fmt(mat)}</td></tr>
+<tr class="sub"><td>Hesaplanan gelir vergisi</td><td>${fmt(hgv)}</td></tr>
+<tr class="ist"><td>− GV istisnası (asgari ücret)</td><td>${fmt(GV_IST)}</td></tr>
+<tr class="bf"><td>Ödenecek gelir vergisi</td><td>${fmt(ngv)}</td></tr>
+<tr><td>Damga vergisi (net)</td><td>${fmt(ndv)}</td></tr>
+<tr class="tot"><td>Toplam kesinti</td><td>${fmt(topKes)}</td></tr>
+<tr class="net"><td>NET ÖDENECEK TUTAR</td><td>${fmt(netF)}</td></tr>
+</tbody></table>
+<p class="note">2026 Parametreleri: Brüt Asgari Ücret 33.030,00 TL · GV İstisnası ${fmt(GV_IST)} · Damga Vergisi İstisnası ${fmtN(DV_IST)} TL · Damga Vergisi ‰7,59 · Mesai: Normal ×1,5 / Tatil ×2</p>
+<div class="sig"><div>Taha Külahcı<br>MİHENK Kesici Takımlar San. Tic. Ltd. Şti.<br>İşveren</div><div>${ad}<br>Bordroyu okudum, teslim aldım.<br>Personel</div></div>
+</body></html>`;
+  const w=window.open('','_blank','width=800,height=700');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),600);
+}
+
+// PWA Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(e => console.warn('SW:', e)));
+}
+</script>
+</body>
+</html>
